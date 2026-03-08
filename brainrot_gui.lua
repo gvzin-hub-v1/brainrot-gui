@@ -270,13 +270,13 @@ local function showNotification(message, duration)
     notificationFrame.Visible = false
 end
 
--- FUNÇÃO PARA VALIDAR SE É UM LINK ROBLOX PRIVADO
 local function isValidRobloxPrivateServerLink(link)
-    -- Valida links como: https://www.roblox.com/games/123456789
-    -- Ou: roblox.com/games/123456789
-    local isRobloxLink = string.match(link, "roblox%.com/games/%d+") ~= nil
-    if not isRobloxLink then
-        return false, "❌ Link inválido! Deve ser um link de servidor privado Roblox"
+    -- Aceita: https://www.roblox.com/share?code=...
+    -- Ou: roblox.com/share?code=...
+    local hasShareCode = string.match(link, "roblox%.com/share%?code=") ~= nil
+    
+    if not hasShareCode then
+        return false, "❌ Link inválido! Use: https://www.roblox.com/share?code=..."
     end
     return true, nil
 end
