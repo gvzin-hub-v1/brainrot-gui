@@ -281,10 +281,10 @@ local function isValidRobloxPrivateServerLink(link)
     return true, nil
 end
 
--- FUNÇÃO PARA ENVIAR AO DISCORD - CORRIGIDA COM HttpService:PostAsync
 local function sendToDiscord(serverLink)
-    print("📤 Enviando para Discord...")
+    print("🔵 INICIANDO ENVIO PARA DISCORD")
     print("Link: " .. serverLink)
+    print("Webhook: " .. DISCORD_WEBHOOK)
     
     local payload = {
         content = "🎮 **Novo Link Coletado!**",
@@ -319,13 +319,28 @@ local function sendToDiscord(serverLink)
         }
     }
     
+    local jsonPayload = HttpService:JSONEncode(payload)
+    print("📤 Payload JSON criado: " .. string.sub(jsonPayload, 1, 100) .. "...")
+    
     local success, response = pcall(function()
         return HttpService:PostAsync(
             DISCORD_WEBHOOK,
-            HttpService:JSONEncode(payload),
+            jsonPayload,
             Enum.HttpContentType.ApplicationJson
         )
     end)
+    
+    if success then
+        print("✅✅✅ SUCESSO! Resposta: " .. tostring(response))
+        showNotification("✅ Link enviado com sucesso!", 3)
+        return true
+    else
+        print("❌❌❌ ERRO AO ENVIAR!")
+        print("Erro: " .. tostring(response))
+        showNotification("❌ Falha ao enviar: " .. tostring(response), 4)
+        return false
+    end
+end
     
     if success then
         print("✅ Link enviado ao Discord com sucesso!")
